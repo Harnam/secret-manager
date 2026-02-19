@@ -8,8 +8,8 @@ export interface Note {
 }
 
 export type DecryptedNote = {
-  id: string;
+  id?: string;
   title: string;
   content: string;
-  createdAt: number;
+  createdAt?: number;
 };

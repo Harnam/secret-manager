@@ -1,10 +1,13 @@
 import { decryptData } from "@/lib/crypto";
-import { Note } from "@/Types/Note";
+import { deleteNoteForUser, saveNoteForUser, updateNoteForUser } from "@/lib/storage";
+import { DecryptedNote, Note } from "@/Types/Note";
 import { useEffect, useState } from "react";
 
-export default function NoteEdit({ password, note }: {
+export default function NoteEdit({ userId, password, note, triggerReload }: {
+  userId: string;
   password: string;
   note: Note | null;
+  triggerReload: () => void;
 }) {
 
     const [title, setTitle] = useState("");
@@ -33,6 +36,38 @@ export default function NoteEdit({ password, note }: {
         loadNote();
     }, [note, password]);
 
+    const saveNote = () => {
+        const dec: DecryptedNote = {
+            title,
+            content,
+        };
+        saveNoteForUser(userId, dec, password).then(() => {
+            setTitle("");
+            setContent("");
+            triggerReload();
+        });
+    };
+
+    const deleteNote = () => {
+        if (!note) return;
+        deleteNoteForUser(userId, note.id).then(() => {
+            triggerReload();
+        });
+    };
+
+    const editNote = () => {
+        if (!note) return;
+        const dec: DecryptedNote = {
+            id: note.id,
+            title,
+            content,
+            createdAt: note.createdAt
+        };
+        updateNoteForUser(userId, dec, password).then(() => {
+            triggerReload();
+        });
+    };
+
     return (
          <div className="flex-1 p-4">
 
@@ -51,13 +86,13 @@ export default function NoteEdit({ password, note }: {
       />
 
       <button
-        // onClick={saveNote} //to be implemented
+        onClick={!note ? saveNote : editNote}
         className="bg-green-500 text-white px-4 py-2"
       >
         {!note ? "Create Note" : "Edit Note"}
       </button>
       <button
-        // onClick={deleteNote} //to be implemented
+        onClick={deleteNote}
         className="bg-red-500 text-white px-4 py-2"
         disabled={!note}
       >

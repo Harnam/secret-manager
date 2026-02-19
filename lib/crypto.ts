@@ -10,3 +10,16 @@ export const decryptData = async (note: Note, password: string): Promise<Decrypt
         });
     });
 }
+
+export const encryptData = async (dec: DecryptedNote, password: string): Promise<Note> => {
+    return new Promise((resolve, reject) => {
+        resolve({
+            id: dec.id || crypto.randomUUID(),
+            title: dec.title,
+            encryptedData: dec.content,
+            salt: "default-salt", // In a real app, this would be generated securely
+            iv: "default-iv", // In a real app, this would be generated securely
+            createdAt: dec.createdAt || Date.now()
+        });
+    });
+}
