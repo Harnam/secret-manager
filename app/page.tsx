@@ -5,11 +5,11 @@ import NotesApp from "@/Components/NotesApp";
 import { useState } from "react";
 
 export default function Home() {
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState<User|null>(null);
 
-  if (!password)
-    return (<Login onUnlock={setPassword} />);
+  if (!user)
+    return (<Login onUnlock={setUser} />);
   
-  return (<NotesApp password={password} />);
+  return (<NotesApp user={user} />);
 
 }
