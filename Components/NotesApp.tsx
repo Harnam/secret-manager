@@ -5,7 +5,7 @@ import { Note } from "@/Types/Note";
 import { useEffect, useState } from "react";
 
 export default function NotesApp({ user }: {
-  user: User;
+  user: UserLogin;
 }) {
 
     const [notes, setNotes] = useState<Note[]>([]);

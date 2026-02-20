@@ -1,16 +1,28 @@
-export const LoginOrSignUp = async (user: User): Promise<{status: string, user?: User, error?: string}> => {
+import { hashPassword } from "./crypto";
+
+export const LoginOrSignUp = async (user: UserLogin): Promise<{status: string, user?: User, error?: string}> => {
     return new Promise((resolve, reject) => {
-            const storedUser = localStorage.getItem("user" + user.id);
+            const storedUser = localStorage.getItem("user" + user.id) || null;
+            console.log("Stored user:", storedUser);
             if (storedUser) {
-                if (JSON.parse(storedUser).password !== user.password) {
-                    reject({ status: "error", error: "Incorrect password" });
-                } else
-                    resolve({ status: "success", user: JSON.parse(storedUser) as User });
+                const parsedUser = JSON.parse(storedUser) as User;
+                hashPassword(user.password, parsedUser.salt).then(({ hash }) => {
+                    if (parsedUser.hash !== hash) {
+                        reject({ status: "error", error: "Incorrect password" });
+                    } else {
+                        resolve({ status: "success", user: parsedUser });
+                    }
+                });
             } else {
-                localStorage.setItem("user" + user.id, JSON.stringify(user));
-                resolve({ status: "success", user });
+                hashPassword(user.password).then(({ hash, salt }) => {
+                    const newUser: User = {
+                        id: user.id,
+                        hash,
+                        salt
+                    };
+                    localStorage.setItem("user" + user.id, JSON.stringify(newUser));
+                    resolve({ status: "success", user: newUser });
+                });
             }
         });
 }
-
-//implement hashing

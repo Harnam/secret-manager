@@ -39,6 +39,35 @@ async function getKeyFromPassword(password: string, salt: ArrayBuffer) {
     );
 }
 
+export async function hashPassword(password: string, salt?: string) {
+
+    const saltBytes = salt? new Uint8Array(base64ToArrayBuffer(salt)) : crypto.getRandomValues(new Uint8Array(16));
+
+    const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(password),
+        "PBKDF2",
+        false,
+        ["deriveBits"]
+    );
+
+    const hashBuffer = await crypto.subtle.deriveBits({
+            name: "PBKDF2",
+            salt: saltBytes.buffer,
+            iterations: 100000,
+            hash: "SHA-256"
+        },
+        keyMaterial,
+        256
+    );
+
+    return {
+        hash: arrayBufferToBase64(hashBuffer),
+        salt: arrayBufferToBase64(saltBytes.buffer)
+    };
+
+}
+
 export const decryptData = async (note: Note, password: string): Promise<DecryptedNote> => {
     const salt = base64ToArrayBuffer(note.salt);
     const iv = base64ToArrayBuffer(note.iv);

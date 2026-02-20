@@ -11,6 +11,7 @@ export default function Login({ onUnlock }: {
 
   function login() {
     LoginOrSignUp({ id, password }).then((result) => {
+      console.log("Login result:", result);
       if (result.status === "success") {
         onUnlock(result.user!);
       } else {
