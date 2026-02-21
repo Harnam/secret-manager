@@ -5,7 +5,7 @@ import NotesApp from "@/Components/NotesApp";
 import { useState } from "react";
 
 export default function Home() {
-  const [user, setUser] = useState<User|null>(null);
+  const [user, setUser] = useState<UserLogin|null>(null);
 
   if (!user)
     return (<Login onUnlock={setUser} />);

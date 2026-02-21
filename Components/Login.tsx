@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LoginOrSignUp } from "@/lib/login";
 
 export default function Login({ onUnlock }: {
-  onUnlock: (user: User) => void;
+  onUnlock: (user: UserLogin) => void;
 }) {
   const [password, setPassword] = useState("");
   const [id, setId] = useState("");
